@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: nestjs-test
+  name: nestjs-winston-deployment
+  labels:
+    app: nestjs-winston-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nestjs-winston-app
+  template:
+    metadata:
+      annotations:
+        instrumentation.opentelemetry.io/inject-nodejs: "true"
+      labels:
+        app: nestjs-winston-app
+    spec:
+      containers:
+        - name: nestjs-winston-container
+          image: dev.local/nestjs-winston-app:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: nestjs-test
+  name: nestjs-winston-service
+spec:
+  type: NodePort
+  selector:
+    app: nestjs-winston-app
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30300
