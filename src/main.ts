@@ -9,7 +9,7 @@ import * as winston from 'winston';
 async function bootstrap() {
   // Define the custom log format
   const customFormat = winston.format.printf((record) => {
-    const {timestamp, level, trace_id='', span_id='', service_name = 'my-service-name', message} = record;
+    const {timestamp, level, trace_id='', span_id='', service_name = process.env.OTEL_SERVICE_NAME ?? '', message} = record;    
     /*
     console.log(record);
     // {
